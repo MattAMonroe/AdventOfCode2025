@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSample(t *testing.T) {
+func TestSampleP1(t *testing.T) {
 	content := aoclib.ReadFile("sample.txt")
 	countZeroTurns := CountZeros(content)
 
@@ -15,7 +15,7 @@ func TestSample(t *testing.T) {
 	assert.Equalf(t, 3, countZeroTurns, "Didn't get correct number of Zero Turns, got %d", countZeroTurns)
 }
 
-func TestFull(t *testing.T) {
+func TestFullP1(t *testing.T) {
 	content := aoclib.ReadFile("problem.txt")
 	countZeroTurns := CountZeros(content)
 
@@ -54,6 +54,44 @@ func TestCountZeroLeft(t *testing.T) {
 
 	zeroTurns = CountZeros("L25\nL24\nL2")
 	assert.Equalf(t, 0, zeroTurns, "Simple L25,L24,L2 failed")
+}
+
+func TestSampleP2(t *testing.T) {
+	content := aoclib.ReadFile("sample.txt")
+	countZeroTurns := CountZeroPasses(content)
+
+	assert.NotEqualf(t, "", content, "Didn't get file content, got \n===\n%s\n===\n", content)
+	assert.Equalf(t, 6, countZeroTurns, "Didn't get correct number of Zero Turns, got %d", countZeroTurns)
+}
+
+func TestFullP2(t *testing.T) {
+	content := aoclib.ReadFile("problem.txt")
+	countZeroTurns := CountZeroPasses(content)
+
+	assert.NotEqualf(t, "", content, "Didn't get file content, got \n===\n%s\n===\n", content)
+	assert.Equalf(t, 1059, countZeroTurns, "Didn't get correct number of Zero Turns, got %d", countZeroTurns)
+}
+
+func TestCountZeroPassesRight(t *testing.T) {
+	zeroTurns := CountZeroPasses("R500")
+	assert.Equalf(t, 5, zeroTurns, "Simple R500 failed")
+
+	zeroTurns = CountZeroPasses("R25\nR24\nR2")
+	assert.Equalf(t, 1, zeroTurns, "Simple R25,R24,R2 failed")
+
+	zeroTurns = CountZeroPasses("R50\nR200")
+	assert.Equalf(t, 3, zeroTurns, "Simple R50,R200 failed")
+}
+
+func TestCountZeroPassesLeft(t *testing.T) {
+	zeroTurns := CountZeroPasses("L500")
+	assert.Equalf(t, 5, zeroTurns, "Simple L500 failed")
+
+	zeroTurns = CountZeroPasses("L25\nL24\nL2")
+	assert.Equalf(t, 1, zeroTurns, "Simple L25,L24,L2 failed")
+
+	zeroTurns = CountZeroPasses("L50\nL200")
+	assert.Equalf(t, 3, zeroTurns, "Simple L50,L200 failed")
 }
 
 func TestProcessInput(t *testing.T) {
