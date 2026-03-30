@@ -1,17 +1,9 @@
-BIN=bin/aoc_01
-.PHONY=build test run verify clean tidy
+.PHONY=build test verify clean tidy
 
 build: tidy test
-	go build -o ${BIN} main.go
-
-run:
-	go run main.go
 
 test: verify
 	go test -v -count=1 ./...
-
-clean:
-	rm -f ${BIN}
 
 tidy:
 	go fmt ./...
