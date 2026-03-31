@@ -69,23 +69,72 @@ func CheckInvalid(num int) bool {
 
 	midpoint := strLen / 2
 
-	// fmt.Fprintf(os.Stderr, "Comparing values \"%s\" : \"%s\" \n", strNum[0:midpoint], strNum[midpoint:strLen])
-
 	return strings.Compare(strNum[0:midpoint], strNum[midpoint:strLen]) == 0
 }
 
 func FindInvalidIDs(ranges []Range) int {
+	return findInvalidIDs(ranges, CheckInvalid)
+}
+
+func findInvalidIDs(ranges []Range, check func(int) bool) int {
 	sum := 0
 
 	for _, r := range ranges {
 		size := r.end - r.start + 1
 		for i := range size {
 			num := r.start + i
-			if CheckInvalid(num) {
+			if check(num) {
 				sum += num
 			}
 		}
 	}
 
 	return sum
+}
+
+func FindInvalidIDsExtra(ranges []Range) int {
+	return findInvalidIDs(ranges, CheckExtra)
+}
+
+func CheckExtra(num int) bool {
+	strNum := strconv.Itoa(num)
+	strLen := len(strNum)
+
+	startLen := strLen / 2
+
+	for i := range startLen {
+		checkLen := startLen - i
+		if strLen%checkLen != 0 {
+			// we need to evenly split the string without leftover chars
+			// 1212121212 len 3 => 121 | 212| 121 | 2 will not work because we will have a hanging 2
+			// it doesn't matter what the actual substring is
+			continue
+		}
+
+		doesMatch := CheckExtraRange(strNum, checkLen)
+		if doesMatch {
+			return true
+		}
+
+	}
+
+	return false
+}
+
+func CheckExtraRange(strNum string, checkLen int) bool {
+	strLen := len(strNum)
+
+	start := checkLen
+	end := checkLen * 2
+	pattern := strNum[0:checkLen]
+	for end <= strLen {
+		compStr := strNum[start:end]
+		if compStr != pattern {
+			return false
+		}
+		start += checkLen
+		end += checkLen
+	}
+
+	return true
 }
