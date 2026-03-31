@@ -69,7 +69,7 @@ func TestFullP2(t *testing.T) {
 	countZeroTurns := CountZeroPasses(content)
 
 	assert.NotEqualf(t, "", content, "Didn't get file content, got \n===\n%s\n===\n", content)
-	assert.Equalf(t, 1059, countZeroTurns, "Didn't get correct number of Zero Turns, got %d", countZeroTurns)
+	assert.Equalf(t, 6305, countZeroTurns, "Didn't get correct number of Zero Turns, got %d", countZeroTurns)
 }
 
 func TestCountZeroPassesRight(t *testing.T) {
