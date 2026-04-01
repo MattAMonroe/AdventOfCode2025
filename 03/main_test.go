@@ -54,15 +54,41 @@ func TestFindBestCombo(t *testing.T) {
 	assert.Equal(t, 78, value)
 	value = FindBestCombo([]int{8, 1, 8, 1, 8, 1, 9, 1, 1, 1, 1, 2, 1, 1, 1})
 	assert.Equal(t, 92, value)
+}
 
+func TestFindFirstDigitLoc(t *testing.T) {
+	value := FindFirstDigitLoc([]int{9, 8, 7, 6, 5, 4, 3, 2, 1, 1, 1, 1, 1, 1, 1}[:3])
+	assert.Equal(t, 0, value)
+	value = FindFirstDigitLoc([]int{8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9}[:3])
+	assert.Equal(t, 0, value)
+	value = FindFirstDigitLoc([]int{2, 3, 4, 2, 3, 4, 2, 3, 4, 2, 3, 4, 2, 7, 8}[:3])
+	assert.Equal(t, 2, value)
+	value = FindFirstDigitLoc([]int{8, 1, 8, 1, 8, 1, 9, 1, 1, 1, 1, 2, 1, 1, 1}[:3])
+	assert.Equal(t, 0, value)
+}
+
+func TestSumBestLargeCombos(t *testing.T) {
+	testarr := []int{8, 1, 8, 1, 8, 1, 9, 1, 1, 1, 1, 2, 1, 1, 1}
+	value := SumBestLargeCombos([][]int{testarr})
+	assert.Equal(t, 888911112111, value)
 }
 
 func TestSampleP2(t *testing.T) {
 	content := aoclib.ReadFile("sample.txt")
 	assert.NotEqualf(t, "", content, "Failed to read in file contents for sample.txt")
+
+	banks := ReadBatteryBanks(content)
+
+	sum := SumBestLargeCombos(banks)
+	assert.Equal(t, 3121910778619, sum)
 }
 
 func TestFullP2(t *testing.T) {
 	content := aoclib.ReadFile("problem.txt")
 	assert.NotEqualf(t, "", content, "Failed to read in file contents for problem.txt")
+
+	banks := ReadBatteryBanks(content)
+
+	sum := SumBestLargeCombos(banks)
+	assert.Equal(t, 171039099596062, sum)
 }

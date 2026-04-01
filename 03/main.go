@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -48,17 +49,9 @@ func FindBestCombo(bank []int) int {
 		}
 	}
 
-	searchLen := len(bank) - firstDigitIdx - 1
-	cursor = 0
-	for i := range searchLen {
-		loc := firstDigitIdx + i + 1
-		if bank[loc] > cursor {
-			secondDigitIdx = loc
-			cursor = bank[loc]
-		}
-	}
+	secondDigitIdx = FindNextDigitLoc(bank[firstDigitIdx+1:])
 
-	return bank[firstDigitIdx]*10 + bank[secondDigitIdx]
+	return bank[firstDigitIdx]*10 + bank[secondDigitIdx+1+firstDigitIdx]
 }
 
 func SumBestCombos(batteries [][]int) int {
@@ -66,6 +59,57 @@ func SumBestCombos(batteries [][]int) int {
 	for _, bank := range batteries {
 
 		sum += FindBestCombo(bank)
+	}
+
+	return sum
+}
+
+func FindFirstDigitLoc(bank []int) int {
+	foundIdx := 0
+	cursor := 0
+	for i := range len(bank) {
+		checkPos := len(bank) - i - 1
+		if bank[checkPos] >= cursor {
+			cursor = bank[checkPos]
+			foundIdx = checkPos
+		}
+	}
+
+	return foundIdx
+}
+
+func FindNextDigitLoc(bank []int) int {
+	digitIdx := 0
+
+	searchLen := len(bank)
+	cursor := 0
+
+	for i := range searchLen {
+		if bank[i] > cursor {
+			digitIdx = i
+			cursor = bank[i]
+		}
+	}
+
+	return digitIdx
+}
+
+func SumBestLargeCombos(batteries [][]int) int {
+	sum := 0
+
+	for _, bank := range batteries {
+		start := 0
+		jolt := 0
+		for i := range 12 {
+			digitSliceIdx := FindNextDigitLoc(bank[start : len(bank)-11+i])
+			digitIdx := digitSliceIdx + start
+			digit := bank[digitIdx]
+			jolt += int(math.Pow(10.0, 11.0-float64(i))) * digit
+
+			start = digitIdx + 1
+
+		}
+		sum += jolt
 	}
 
 	return sum
