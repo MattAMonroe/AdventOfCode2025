@@ -10,6 +10,11 @@ func main() {
 	fmt.Printf("Hello World!")
 }
 
+type Coord struct {
+	Row int
+	Col int
+}
+
 type Grid struct {
 	Rolls [][]int
 }
@@ -28,6 +33,14 @@ func (g Grid) Rows() int {
 
 func (g *Grid) AddRow(r []int) {
 	g.Rolls = append(g.Rolls, r)
+}
+
+func (g *Grid) RemoveCoord(c Coord) bool {
+	if g.Rolls[c.Row][c.Col] == 1 {
+		g.Rolls[c.Row][c.Col] = 0
+		return true
+	}
+	return false
 }
 
 func (g Grid) String() string {
@@ -70,8 +83,8 @@ func ReadGrid(content string) Grid {
 	return grid
 }
 
-func CountFreeRolls(g Grid) int {
-	countFree := 0
+func GetFreeRolls(g Grid) []Coord {
+	coords := []Coord{}
 	for r, row := range g.Rolls {
 		for c, value := range row {
 			if value == 0 {
@@ -116,10 +129,27 @@ func CountFreeRolls(g Grid) int {
 				}
 			}
 			if countNearby < 4 {
-				countFree++
+				coords = append(coords, Coord{r, c})
 			}
 		}
 	}
 
-	return countFree
+	return coords
+}
+
+func CountRemoveRolls(g *Grid) int {
+	countRemovedTotal := 0
+	countRemovedRun := 1
+
+	for countRemovedRun > 0 {
+		removeCoords := GetFreeRolls(*g)
+		for _, coord := range removeCoords {
+			g.RemoveCoord(coord)
+		}
+
+		countRemovedRun = len(removeCoords)
+		countRemovedTotal += len(removeCoords)
+	}
+
+	return countRemovedTotal
 }
