@@ -30,9 +30,19 @@ func TestFullP1(t *testing.T) {
 func TestSampleP2(t *testing.T) {
 	content := aoclib.ReadFile("sample.txt")
 	assert.NotEqualf(t, "", content, "Failed to read in file contents for sample.txt")
+
+	grid := ParseGrid(content)
+	assert.Greater(t, len(grid), 1)
+	splits := CountPaths(grid)
+	assert.Equal(t, 40, splits)
 }
 
 func TestFullP2(t *testing.T) {
 	content := aoclib.ReadFile("problem.txt")
 	assert.NotEqualf(t, "", content, "Failed to read in file contents for problem.txt")
+
+	grid := ParseGrid(content)
+	assert.Greater(t, len(grid), 1)
+	splits := CountPaths(grid)
+	assert.Equal(t, 390684413472684, splits)
 }
