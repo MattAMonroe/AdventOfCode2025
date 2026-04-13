@@ -46,14 +46,10 @@ func TestDistance(t *testing.T) {
 	q.Add(p1p2)
 	q.Add(p1p3)
 
-	// fmt.Fprintf(os.Stderr, "%v\n", q.conns)
-
 	q = Queue{[]Connection{}, 2}
 	q.Add(p2p3)
 	q.Add(p1p2)
 	q.Add(p1p3)
-
-	// fmt.Fprintf(os.Stderr, "%v\n", q.conns)
 }
 
 func TestFullP1(t *testing.T) {
@@ -78,9 +74,35 @@ func TestFullP1(t *testing.T) {
 func TestSampleP2(t *testing.T) {
 	content := aoclib.ReadFile("sample.txt")
 	assert.NotEqualf(t, "", content, "Failed to read in file contents for sample.txt")
+
+	points := ParseInput(content)
+	assert.Greater(t, len(points), 0)
+
+	dq := CreateAllConnections(points)
+	assert.Equal(t, 190, dq.Len())
+
+	circuit, conn := CreateSingleCircuit(dq, 20)
+	assert.NotEqual(t, nil, circuit)
+	assert.NotEqual(t, nil, conn)
+
+	product := conn.p1.X * conn.p2.X
+	assert.Equal(t, 25272, product)
 }
 
 func TestFullP2(t *testing.T) {
 	content := aoclib.ReadFile("problem.txt")
 	assert.NotEqualf(t, "", content, "Failed to read in file contents for problem.txt")
+
+	points := ParseInput(content)
+	assert.Greater(t, len(points), 0)
+
+	dq := CreateAllConnections(points)
+	assert.Equal(t, 499500, dq.Len())
+
+	circuit, conn := CreateSingleCircuit(dq, 1000)
+	assert.NotEqual(t, nil, circuit)
+	assert.NotEqual(t, nil, conn)
+
+	product := conn.p1.X * conn.p2.X
+	assert.Equal(t, 6083499488, product)
 }

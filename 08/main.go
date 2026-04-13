@@ -2,6 +2,7 @@ package main
 
 import (
 	"cmp"
+	"container/heap"
 	"fmt"
 	"math"
 	"os"
@@ -171,6 +172,88 @@ func (q *Queue) ComputeConnections(points []*Point) {
 			q.Add(conn)
 		}
 	}
+}
+
+type DistQueue []*Connection
+
+func (dq DistQueue) Len() int { return len(dq) }
+func (dq DistQueue) Less(i, j int) bool {
+	return dq[i].dist < dq[j].dist
+}
+
+func (dq DistQueue) Swap(i, j int) {
+	dq[i], dq[j] = dq[j], dq[i]
+}
+
+func (dq *DistQueue) Push(x any) {
+	item := x.(*Connection)
+	*dq = append(*dq, item)
+}
+
+func (dq *DistQueue) Pop() any {
+	old := *dq
+	n := len(old)
+	item := old[n-1]
+	old[n-1] = nil
+	*dq = old[0 : n-1]
+	return item
+}
+
+func CreateAllConnections(points []*Point) DistQueue {
+	size := (len(points) * (len(points) - 1)) / 2
+	dq := make(DistQueue, 0, size)
+	heap.Init(&dq)
+	for i, p1 := range points {
+		if i == len(points) {
+			continue
+		}
+		for _, p2 := range points[i+1:] {
+			dist := p1.DistTo(p2)
+			conn := new(Connection)
+			conn.p1 = p1
+			conn.p2 = p2
+			conn.dist = dist
+			heap.Push(&dq, conn)
+		}
+	}
+
+	return dq
+}
+
+func CreateSingleCircuit(dq DistQueue, target int) (*Circuit, *Connection) {
+	circuits := []*Circuit{}
+	for dq.Len() > 0 {
+		conn := heap.Pop(&dq).(*Connection)
+		if conn.p1.circuit == nil && conn.p2.circuit == nil {
+			// new points not in circuits, need to create a new circuit
+			newcircuit := &Circuit{nodes: map[string]*Point{}}
+			newcircuit.Add(conn.p1)
+			newcircuit.Add(conn.p2)
+			circuits = append(circuits, newcircuit)
+			continue
+		}
+		if conn.p1.circuit == conn.p2.circuit {
+			continue
+		}
+		if conn.p1.circuit != nil {
+			conn.p1.circuit.Merge(conn.p2.circuit)
+			conn.p1.circuit.Add(conn.p2)
+		} else {
+			conn.p2.circuit.Add(conn.p1)
+		}
+		slices.SortFunc(circuits, func(a, b *Circuit) int {
+			return cmp.Compare(len(a.nodes), len(b.nodes))
+		})
+		for len(circuits) > 0 && len(circuits[0].nodes) == 0 {
+			circuits = circuits[1:]
+		}
+		if len(circuits) == 1 && len(circuits[0].nodes) == target {
+			return circuits[0], conn
+		}
+	}
+
+	return nil, nil
+
 }
 
 func CreateCircuits(conns []Connection) []*Circuit {
